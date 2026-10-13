@@ -1164,6 +1164,25 @@ test("load('url selector')", function() {
 	});
 });
 
+test("load('url selector') - never executes scripts, whatever their end tag looks like (CVE-2020-7656)", function() {
+	expect(4);
+	stop();
+
+	window.loadScriptExecuted = false;
+	window.loadScriptWhitespaceExecuted = false;
+	window.loadScriptAttributeExecuted = false;
+
+	jQuery("#first").load("data/load_scripts.html div.user", function() {
+		equal( jQuery(this).children("div").length, 2, "Verify that specific elements were injected" );
+		ok( !window.loadScriptExecuted, "Script was not executed" );
+		ok( !window.loadScriptWhitespaceExecuted, "Script with whitespace before the '>' of its end tag was not executed" );
+		ok( !window.loadScriptAttributeExecuted, "Script with an attribute in its end tag was not executed" );
+
+		window.loadScriptExecuted = window.loadScriptWhitespaceExecuted = window.loadScriptAttributeExecuted = undefined;
+		start();
+	});
+});
+
 test("load(String, Function) with ajaxSetup on dataType json, see #2046", function() {
 	expect(1);
 	stop();
