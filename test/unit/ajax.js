@@ -1662,6 +1662,57 @@ test("jQuery.ajax() - script by content-type", function() {
 	});
 });
 
+test("jQuery.ajax() - do not execute js (crossOrigin) (gh-2432)", function() {
+	// data/script.php runs an extra ok() if it is executed
+	expect(2);
+
+	stop();
+
+	jQuery.when(
+
+		jQuery.ajax({
+			url: "data/script.php",
+			data: { header: "script" },
+			crossDomain: true,
+			success: function( data ) {
+				equal( typeof data, "string", "text/javascript response is returned as text" );
+			}
+		}),
+
+		jQuery.ajax({
+			url: "data/script.php",
+			data: { header: "ecma" },
+			crossDomain: true,
+			success: function( data ) {
+				equal( typeof data, "string", "application/ecmascript response is returned as text" );
+			}
+		})
+
+	).always(function() {
+		start();
+	});
+});
+
+test("jQuery.ajax() - execute js for crossOrigin when dataType option is provided (gh-2432)", function() {
+	// data/script.php runs the second ok()
+	expect(2);
+
+	stop();
+
+	jQuery.ajax({
+		url: "data/script.php",
+		data: { header: "ecma" },
+		crossDomain: true,
+		dataType: "script",
+		success: function() {
+			ok( true, "success" );
+		},
+		complete: function() {
+			start();
+		}
+	});
+});
+
 test("jQuery.ajax() - json by content-type", function() {
 	expect(5);
 
