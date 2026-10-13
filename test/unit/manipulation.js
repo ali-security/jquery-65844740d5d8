@@ -1752,3 +1752,22 @@ test("Guard against exceptions when clearing safeChildNodes", function() {
 
 	ok( div && div.jquery, "Created nodes safely, guarded against exceptions on safeChildNodes[ -1 ]" );
 });
+
+test("<option> elements are not wrapped in a <select> (gh-4647)", function() {
+	expect(6);
+
+	// The wrapping <select> used to be closed by the markup itself, moving the rest
+	// of it out of the select (and so out of a sanitizer's view) and dropping the option
+	var html = "<option>a</option></select><b>b</b>",
+		elems = jQuery( html );
+
+	equal( elems.length, 2, "jQuery(html): two nodes are created" );
+	equal( elems.length && elems[ 0 ].nodeName.toLowerCase(), "option", "jQuery(html): the first node is the option" );
+	equal( elems.length && elems[ elems.length - 1 ].nodeName.toLowerCase(), "b", "jQuery(html): the last node is the b" );
+
+	equal( jQuery("<div></div>").html( html ).children().length, 2, "html(): two children are created" );
+	equal( jQuery("<div></div>").append( html ).children().length, 2, "append(): two children are created" );
+
+	equal( jQuery("<select></select>").html("<option>O1</option><option>O2</option>").children("option").length, 2,
+		"Options can still be set as the content of a select" );
+});
