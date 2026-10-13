@@ -62,7 +62,7 @@ test("jQuery()", function() {
 	var img = jQuery("<img/>");
 	equal( img.length, 1, "Correct number of elements generated for img" );
 	equal( img.parent().length, 0, "Make sure that the generated HTML has no parent." );
-	var div = jQuery("<div/><hr/><code/><b/>");
+	var div = jQuery("<div></div><hr/><code></code><b></b>");
 	equal( div.length, 4, "Correct number of elements generated for div hr code b" );
 	equal( div.parent().length, 0, "Make sure that the generated HTML has no parent." );
 
